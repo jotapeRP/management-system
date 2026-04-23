@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "https://my-backend-t3wj.onrender.com";
 
 //Clientes
 
