@@ -4,10 +4,8 @@ const db = require("../database");
 
 //Listar
 router.get("/", (req, res) => {
-  db.all("SELECT * FROM clientes", (err, rows) => {
-    if (err) return res.status(500).json(err);
-    res.json(rows);
-  });
+  const rows = db.prepare("SELECT * FROM clientes").all();
+  res.json(rows);
 });
 
 //Criar
@@ -25,22 +23,29 @@ router.post("/", (req, res) => {
     telefone,
   } = req.body;
 
-  db.run(
-    `INSERT INTO clientes (nome, cpf_cnpj, cep, rua, bairro, numero, cidade, estado, email, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [nome, cpf_cnpj, cep, rua, bairro, numero, cidade, estado, email, telefone],
-    function (err) {
-      if (err) return res.status(500).json(err);
-      res.json({ id: this.lastID });
-    },
-  );
+  const result = db
+    .prepare(
+      `INSERT INTO clientes (nome, cpf_cnpj, cep, rua, bairro, numero, cidade, estado, email, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .run(
+      nome,
+      cpf_cnpj,
+      cep,
+      rua,
+      bairro,
+      numero,
+      cidade,
+      estado,
+      email,
+      telefone,
+    );
+  res.json({ id: result.lastInsertRowid });
 });
 
 //Deletar
 router.delete("/:id", (req, res) => {
-  db.run("DELETE FROM clientes WHERE id = ?", [req.params.id], function (err) {
-    if (err) return res.status(500).json(err);
-    res.json({ MESSAGE: "Cliente removido com sucesso" });
-  });
+  db.prepare("DELETE FROM clientes WHERE id = ?").run(req.params.id);
+  res.json({ MESSAGE: "Cliente removido com sucesso" });
 });
 
 //Atualizar
@@ -58,26 +63,22 @@ router.put("/:id", (req, res) => {
     telefone,
   } = req.body;
 
-  db.run(
+  db.prepare(
     `UPDATE clientes SET nome = ?, cpf_cnpj = ?, cep = ?, rua = ?, bairro = ?, numero = ?, cidade = ?, estado = ?, email = ?, telefone = ? WHERE id = ?`,
-    [
-      nome,
-      cpf_cnpj,
-      cep,
-      rua,
-      bairro,
-      numero,
-      cidade,
-      estado,
-      email,
-      telefone,
-      req.params.id,
-    ],
-    (err) => {
-      if (err) return res.status(500).json(err);
-      res.json({ MESSAGE: "Cliente atualizado com sucesso" });
-    },
+  ).run(
+    nome,
+    cpf_cnpj,
+    cep,
+    rua,
+    bairro,
+    numero,
+    cidade,
+    estado,
+    email,
+    telefone,
+    req.params.id,
   );
+  res.json({ MESSAGE: "Cliente atualizado com sucesso" });
 });
 
 module.exports = router;
