@@ -2,7 +2,8 @@ const Database = require("better-sqlite3");
 const db = new Database("database.db");
 
 db.serialize(() => {
-  db.run(`
+  db.prepare(
+    `
     CREATE TABLE IF NOT EXISTS clientes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nome TEXT,
@@ -16,9 +17,11 @@ db.serialize(() => {
       email TEXT,
       telefone TEXT
     )
-  `);
+  `,
+  ).run();
 
-  db.run(`
+  db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS servicos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     cliente_id INTEGER,
@@ -29,7 +32,8 @@ db.serialize(() => {
     valor REAL,
     status TEXT
   )
-`);
+`,
+  ).run();
 });
 
 module.exports = db;
