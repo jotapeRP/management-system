@@ -17,7 +17,7 @@ This system provides a simple interface to:
 - React.js
 - JavaScript
 - HTML & CSS
-- Tailwind CSS (if used)
+- Tailwind CSS
 
 ## ⚙️ Features
 - User-friendly interface  
